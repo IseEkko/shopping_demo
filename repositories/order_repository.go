@@ -140,7 +140,7 @@ func (o *OrderMangerRepository) SelectAllWithInfo() (OrderMap map[int]map[string
 	if errConn := o.Conn(); errConn != nil {
 		return nil, errConn
 	}
-	sql := "Select o.ID,p.productName,o.orderStatus From imooc.order as o left join product as p on o.productID=p.ID"
+	sql := "Select o.ID,p.productName,o.orderStatus From shopping.order as o left join product as p on o.productID=p.ID"
 	rows, errRows := o.mysqlConn.Query(sql)
 	defer rows.Close()
 	if errRows != nil {
