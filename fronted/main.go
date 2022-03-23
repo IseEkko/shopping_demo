@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
-	"imooc-product/common"
-
 	"github.com/kataras/iris/v12/sessions"
+	"imooc-product/common"
+	"imooc-product/fronted/middleware"
 	"imooc-product/fronted/web/controllers"
 	"imooc-product/repositories"
 	"imooc-product/services"
@@ -51,6 +51,17 @@ func main() {
 	userPro := mvc.New(app.Party("/user"))
 	userPro.Register(ctx, userService, sess.Start)
 	userPro.Handle(new(controllers.UserController))
+
+	product := repositories.NewProductManager("product", db)
+	productService := services.NewProductService(product)
+	order := repositories.NewOrderMangerRepository("order", db)
+	orderService := services.NewOrderService(order)
+	productPro := app.Party("/product")
+	pro := mvc.New(productPro)
+	//验证登录信息
+	productPro.Use(middleware.AuthConProduct)
+	pro.Register(productService, orderService, sess.Start)
+	pro.Handle(new(controllers.ProducrController))
 
 	app.Run(
 		iris.Addr("0.0.0.0:8082"),
