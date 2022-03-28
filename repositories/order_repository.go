@@ -148,5 +148,6 @@ func (o *OrderMangerRepository) SelectAllWithInfo() (OrderMap map[int]map[string
 	if errRows != nil {
 		return nil, errRows
 	}
+
 	return common.GetResultRows(rows), err
 }

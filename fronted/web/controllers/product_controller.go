@@ -6,7 +6,10 @@ import (
 	"github.com/kataras/iris/v12/sessions"
 	"imooc-product/datamodels"
 	"imooc-product/services"
+	"os"
+	"path/filepath"
 	"strconv"
+	"text/template"
 )
 
 type ProducrController struct {
@@ -14,6 +17,61 @@ type ProducrController struct {
 	ProductService services.IProductService
 	OrderService   services.IOrderService
 	Session        *sessions.Sessions
+}
+
+var (
+	//生成的Html保存目录
+	htmlOutPath = "./fronted/web/htmlProductShow/"
+	//静态文件模版目录
+	templatePath = "./fronted/web/views/template/"
+)
+
+func (p *ProducrController) GetGenerateHtml() {
+	productString := p.Ctx.URLParam("productID")
+	productID, err := strconv.Atoi(productString)
+	if err != nil {
+		p.Ctx.Application().Logger().Debug(err)
+	}
+
+	//1.获取模版
+	contenstTmp, err := template.ParseFiles(filepath.Join(templatePath, "product.html"))
+	if err != nil {
+		p.Ctx.Application().Logger().Debug(err)
+	}
+	//2.获取html生成路径
+	fileName := filepath.Join(htmlOutPath, "htmlProduct.html")
+
+	//3.获取模版渲染数据
+	product, err := p.ProductService.GetProductByID(int64(productID))
+	if err != nil {
+		p.Ctx.Application().Logger().Debug(err)
+	}
+	//4.生成静态文件
+	generateStaticHtml(p.Ctx, contenstTmp, fileName, product)
+}
+
+//生成html静态文件
+func generateStaticHtml(ctx iris.Context, template *template.Template, fileName string, product *datamodels.Product) {
+	//1.判断静态文件是否存在
+	if exist(fileName) {
+		err := os.Remove(fileName)
+		if err != nil {
+			ctx.Application().Logger().Error(err)
+		}
+	}
+	//2.生成静态文件
+	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		ctx.Application().Logger().Error(err)
+	}
+	defer file.Close()
+	template.Execute(file, &product)
+}
+
+//判断文件是否存在
+func exist(fileName string) bool {
+	_, err := os.Stat(fileName)
+	return err == nil || os.IsExist(err)
 }
 
 //商品详情页面
