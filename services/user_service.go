@@ -48,7 +48,7 @@ func GenertePassword(userPassword string) ([]byte, error) {
 //检查密码
 func ValidatePassword(userPassWord string, hashed string) (isOk bool, err error) {
 	if err = bcrypt.CompareHashAndPassword([]byte(hashed), []byte(userPassWord)); err != nil {
-		return false, errors.New("密码比对错误")
+		return false, errors.New("密码比对错误！")
 	}
 	return true, nil
 }
