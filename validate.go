@@ -170,7 +170,6 @@ func CheckInfo(checkStr string, signStr string) bool {
 	return false
 }
 func main() {
-
 	//SLB 设置
 	//采用hash一致性算法
 	hashConsistent = common.NewConsistent()
@@ -178,7 +177,6 @@ func main() {
 	for _, v := range hostArray {
 		hashConsistent.Add(v)
 	}
-
 	//1.过滤器
 	fileter := common.NewFilter()
 	//注册拦截器
