@@ -30,8 +30,10 @@ func GetOneProduct() bool {
 func GetProduct(w http.ResponseWriter, req *http.Request) {
 	if GetOneProduct() {
 		w.Write([]byte("true"))
+		return
 	}
 	w.Write([]byte("false"))
+	return
 }
 func main() {
 	http.HandleFunc("/getOne", GetProduct)

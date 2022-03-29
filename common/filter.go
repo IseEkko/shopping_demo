@@ -2,6 +2,7 @@ package common
 
 import (
 	"net/http"
+	"strings"
 )
 
 //声明一个新的数据类型
@@ -35,7 +36,7 @@ type WebHandle func(rw http.ResponseWriter, req *http.Request)
 func (f *Filter) Handle(webhandle WebHandle) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		for path, handle := range f.fileterMap {
-			if path == r.RequestURI {
+			if strings.Contains(r.RequestURI, path) {
 				//执行业务拦截逻辑
 				err := handle(rw, r)
 				if err != nil {

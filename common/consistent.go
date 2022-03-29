@@ -88,7 +88,6 @@ func (c *Consistent) updateSortedHashes() {
 	sort.Sort(hashes)
 	//重新赋值
 	c.sortedHashes = hashes
-
 }
 
 //向hash环中添加节点

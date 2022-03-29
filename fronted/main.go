@@ -8,6 +8,7 @@ import (
 	"imooc-product/common"
 	"imooc-product/fronted/middleware"
 	"imooc-product/fronted/web/controllers"
+	rabbitmq2 "imooc-product/rabbitmq"
 	"imooc-product/repositories"
 	"imooc-product/services"
 	"time"
@@ -52,6 +53,8 @@ func main() {
 	userPro.Register(ctx, userService, sess.Start)
 	userPro.Handle(new(controllers.UserController))
 
+	rabbitmq := rabbitmq2.NewRabbitMQSimple("imoocProduct")
+
 	product := repositories.NewProductManager("product", db)
 	productService := services.NewProductService(product)
 	order := repositories.NewOrderMangerRepository("order", db)
@@ -60,7 +63,7 @@ func main() {
 	pro := mvc.New(productPro)
 	//验证登录信息
 	productPro.Use(middleware.AuthConProduct)
-	pro.Register(productService, orderService, sess.Start)
+	pro.Register(productService, orderService, sess.Start, rabbitmq)
 	pro.Handle(new(controllers.ProducrController))
 
 	app.Run(
